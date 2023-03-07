@@ -24,11 +24,28 @@ def addGlider(i, j, grid):
     grid[i:i+3, j:j+3] = glider
 
 def update(frameNum, img, grid, N):
-    # copy grid since we require 8 neighbors for calculation
-    # and we go line by line 
+      # copy grid since we require 8 neighbors
+    # for calculation and we go line by line
     newGrid = grid.copy()
-    # TODO: Implement the rules of Conway's Game of Life
-
+    for i in range(N):
+        for j in range(N):
+ 
+            # compute 8-neighbor sum
+            # using toroidal boundary conditions - x and y wrap around
+            # so that the simulation takes place on a toroidal surface.
+            total = int((grid[i, (j-1)%N] + grid[i, (j+1)%N] +
+                         grid[(i-1)%N, j] + grid[(i+1)%N, j] +
+                         grid[(i-1)%N, (j-1)%N] + grid[(i-1)%N, (j+1)%N] +
+                         grid[(i+1)%N, (j-1)%N] + grid[(i+1)%N, (j+1)%N])/255)
+ 
+            # apply Conway's rules
+            if grid[i, j]  == ON:
+                if (total < 2) or (total > 3):
+                    newGrid[i, j] = OFF
+            else:
+                if total == 3:
+                    newGrid[i, j] = ON
+ 
     # update data
     img.set_data(newGrid)
     grid[:] = newGrid[:]
@@ -41,6 +58,12 @@ def main():
     # parse arguments
     parser = argparse.ArgumentParser(description="Runs Conway's Game of Life system.py.")
     # TODO: add arguments
+    parser.add_argument('--grid-size', dest='N', required=False)
+    parser.add_argument('--mov-file', dest='movfile', required=False)
+    parser.add_argument('--interval', dest='interval', required=False)
+    parser.add_argument('--glider', action='store_true', required=False)
+    parser.add_argument('--gosper', action='store_true', required=False)
+    args = parser.parse_args()
     
     # set grid size
     N = 100

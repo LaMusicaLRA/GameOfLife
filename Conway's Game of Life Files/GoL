@@ -7,6 +7,7 @@ import sys, argparse
 import numpy as np
 import matplotlib.pyplot as plt 
 import matplotlib.animation as animation
+from entities import *
 
 ON = 255
 OFF = 0
@@ -41,10 +42,76 @@ def update(frameNum, img, grid, N):
             else:
                 if total == 3:
                     newGrid[i, j] = ON
+    checkmatrix(grid)
     # update data
     img.set_data(newGrid)
     grid[:] = newGrid[:]
     return img,
+
+
+#! rob
+def checkLifeForm(i,j,lifeForm,grid):
+    cols,rows = len(lifeForm),len(lifeForm[0])
+    submatrix = grid[i-1:i+cols-1,j-1:j+rows-1]
+    try:
+        if (submatrix == lifeForm).all():
+            grid[i-1:i+cols-1,j-1:j+rows-1] = np.zeros((cols,rows))
+            return 1
+    except:
+        if (submatrix == lifeForm):
+            grid[i-1:i+cols-1,j-1:j+rows-1] = np.zeros((cols,rows))
+            return 1
+    return 0
+
+#! rob
+def checkmatrix(grid):
+    #contadores o diccionario
+    blockCont = 0
+    beehiveCont = 0
+    blinkerCont = 0
+    beaconCont = 0
+    boatCont = 0
+    gliderCont = 0
+    loafCont = 0
+    spaceCont = 0
+    toadCont = 0
+    tubCont = 0
+    auxGrid = grid.copy()
+    auxGrid = np.pad(auxGrid,1)
+    for i in range(len(auxGrid)):
+        for j in range(len(auxGrid[i])):
+            if(auxGrid[i][j] == ON):
+                #sumatorias
+                blockCont += checkLifeForm(i,j,block,auxGrid)
+                beehiveCont += checkLifeForm(i,j,beehive,auxGrid)
+                blinkerCont += checkLifeForm(i,j,blinker,auxGrid)
+                beaconCont += checkLifeForm(i,j,beacon1,auxGrid)
+                beaconCont += checkLifeForm(i,j,beacon2,auxGrid)
+                boatCont += checkLifeForm(i,j,boat,auxGrid)
+                gliderCont += checkLifeForm(i,j,glider1,auxGrid)
+                gliderCont += checkLifeForm(i,j,glider2,auxGrid)
+                gliderCont += checkLifeForm(i,j,glider3,auxGrid)
+                gliderCont += checkLifeForm(i,j,glider4,auxGrid)
+                loafCont += checkLifeForm(i,j,loaf,auxGrid)
+                spaceCont += checkLifeForm(i,j,space1,auxGrid)
+                spaceCont += checkLifeForm(i,j,space2,auxGrid)
+                spaceCont += checkLifeForm(i,j,space3,auxGrid)
+                spaceCont += checkLifeForm(i,j,space4,auxGrid)
+                toadCont += checkLifeForm(i,j,toad1,auxGrid)
+                toadCont += checkLifeForm(i,j,toad2,auxGrid)
+                tubCont += checkLifeForm(i,j,tub,auxGrid)
+                
+    print("blockCont: ",blockCont)
+    print("beehiveCont: ",beehiveCont)
+    print("blinkerCont: ",blinkerCont)
+    print("beaconCont: ",beaconCont)
+    print("boatCont: ",boatCont)
+    print("gliderCont: ",gliderCont)
+    print("loafCont: ",loafCont)
+    print("spaceCont: ",spaceCont)
+    print("toadCont: ",toadCont)
+    print("tubCont: ",tubCont)
+    print("Total:", blockCont+beehiveCont+blinkerCont+beaconCont+boatCont+gliderCont+loafCont+spaceCont+toadCont+tubCont)
 
 # main() function
 def main():
@@ -92,4 +159,4 @@ def main():
 
 # call main
 if __name__ == '__main__':
-    main())
+    main()
